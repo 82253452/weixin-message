@@ -56,7 +56,7 @@ func SelectAllNames() []MessageDto {
 	_ = DB.Select(&messages, `select count(nickname) as num, nickname 
 										from message
 										group by nickname
-										order by count(nickname) desc`)
+										order by count(nickname) desc limit 10`)
 	return messages
 }
 
