@@ -38,7 +38,7 @@ func main() {
 			"result": 123,
 		})
 	})
-	r.Run("0.0.0.0:8007") // listen and serve on 0.0.0.0:8080
+	r.Run("0.0.0.0:8080") // listen and serve on 0.0.0.0:8080
 }
 
 // 处理跨域请求,支持options访问
