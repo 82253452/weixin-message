@@ -1,6 +1,9 @@
 package db
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 type Message struct {
 	Robotid       string `form:"robotid" db:"robotid"`
@@ -19,6 +22,12 @@ type Message struct {
 	Atmod         string `form:"atmod" db:"atmod"`
 }
 
+type MessageDto struct {
+	Num      int    `db:"num"`
+	Nickname string `db:"nickname"`
+	Ctime    string `db:"ctime"`
+}
+
 func (row *Message) Save() {
 	tx := DB.MustBegin()
 	stmt, _ := tx.Prepare("insert into message(robotid,msgid,gid,gusername,gname,mid,nickname,displayname,gadmin,skw,content,atlist,robotnickname,atmod) value (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
@@ -33,4 +42,35 @@ func (row *Message) Save() {
 		log.Fatal(err)
 	}
 	stmt.Close()
+}
+func SelectNameLine(name string) []MessageDto {
+	messages := []MessageDto{}
+	err := DB.Select(&messages, `select ctime,nickname from message where nickname=? order by ctime desc`, name)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return messages
+}
+func SelectAllNames() []MessageDto {
+	messages := []MessageDto{}
+	_ = DB.Select(&messages, `select count(nickname) as num, nickname 
+										from message
+										group by nickname
+										order by count(nickname) desc`)
+	return messages
+}
+
+func Test() {
+	place := MessageDto{}
+	rows, err := DB.Queryx("SELECT * FROM message")
+	if err != nil {
+		fmt.Println(err)
+	}
+	for rows.Next() {
+		err := rows.StructScan(&place)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Printf("%#v\n", place)
+	}
 }
