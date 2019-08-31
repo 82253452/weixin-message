@@ -2,7 +2,7 @@ FROM alpine:latest
 
 WORKDIR /
 
-ADD /remote/src/main main
+ADD main main
 
 EXPOSE 8080
 
