@@ -75,41 +75,75 @@ func SelectAllNames() []MessageDto {
 
 func SelectAllGroups(names []string) []MessageGroupDto {
 	messages := []MessageGroupDto{}
-	querys := `select count(*)                              as wordNumm,
-       gid,
-       gname,
-       s.nickname,
-       (select count(*)
-        from message a
-        where a.gid = s.gid
-          and a.mid = s.mid)                 as totalNum,
-       (select count(*)
-        from message a
-        where a.gid = s.gid
-          and a.content like '%<img%'
-          and a.mid = s.mid)                 as imgNum,
-       (select count(*)
-        from message a
-        where a.gid = s.gid
-          and a.content like '%<video%'
-          and a.mid = s.mid)                 as videoNum,
-       (select count(*)
-        from message a
-        where a.gid = s.gid
-          and a.mid = s.mid
-          and a.content not like '%<img%'
-          and a.content not like '%<video%'
-          and a.content not like '%http%') as textNum,
-(select count(*)
-        from message a
-        where a.gid = s.gid
-          and a.mid = s.mid
-          and a.content like '%http%') as linkNum
-from message s
-where nickname in (?)
-  and content like '%<img%'
-and TO_DAYS(ctime) = TO_DAYS(NOW())
-group by gid, gname, mid,nickname`
+	//	querys := `select count(*)                              as wordNumm,
+	//       gid,
+	//       gname,
+	//       s.nickname,
+	//       (select count(*)
+	//        from message a
+	//        where a.gid = s.gid
+	//          and a.mid = s.mid)                 as totalNum,
+	//       (select count(*)
+	//        from message a
+	//        where a.gid = s.gid
+	//          and a.content like '%<img%'
+	//          and a.mid = s.mid)                 as imgNum,
+	//       (select count(*)
+	//        from message a
+	//        where a.gid = s.gid
+	//          and a.content like '%<video%'
+	//          and a.mid = s.mid)                 as videoNum,
+	//       (select count(*)
+	//        from message a
+	//        where a.gid = s.gid
+	//          and a.mid = s.mid
+	//          and a.content not like '%<img%'
+	//          and a.content not like '%<video%'
+	//          and a.content not like '%http%') as textNum,
+	//(select count(*)
+	//        from message a
+	//        where a.gid = s.gid
+	//          and a.mid = s.mid
+	//          and a.content like '%http%') as linkNum
+	//from message s
+	//where nickname in (?)
+	//  and content like '%<img%'
+	//and TO_DAYS(ctime) = TO_DAYS(NOW())
+	//group by gid, gname, mid,nickname`
+	querys := `
+		select count(*)                            as wordNumm,
+			   gid,
+			   gname,
+			   (select count(*)
+				from message a
+				where a.gid = s.gid
+			   )                                   as totalNum,
+			   (select count(*)
+				from message a
+				where a.gid = s.gid
+				  and a.content like '%<img%'
+			   )                                   as imgNum,
+			   (select count(*)
+				from message a
+				where a.gid = s.gid
+				  and a.content like '%<video%'
+			   )                                   as videoNum,
+			   (select count(*)
+				from message a
+				where a.gid = s.gid
+				  and a.content not like '%<img%'
+				  and a.content not like '%<video%'
+				  and a.content not like '%http%') as textNum,
+			   (select count(*)
+				from message a
+				where a.gid = s.gid
+				  and a.content like '%http%')     as linkNum
+		from message s
+		where nickname in (?)
+		  and content like '%<img%'
+		  and TO_DAYS(ctime) = TO_DAYS(NOW())
+		group by gid, gname
+`
 	query, args, err := sqlx.In(querys, names)
 	if err != nil {
 		fmt.Println(err)
