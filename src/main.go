@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 	"weixin/src/db"
 )
 
@@ -36,6 +37,15 @@ func main() {
 		c.JSON(200, gin.H{
 			"status": "0",
 			"result": 123,
+		})
+	})
+	r.GET("/wexin/getAllGroups", func(c *gin.Context) {
+		name := c.Query("name")
+		names := strings.Split(name, ",")
+		groups := db.SelectAllGroups(names)
+		c.JSON(200, gin.H{
+			"status": "0",
+			"result": groups,
 		})
 	})
 	r.Run("0.0.0.0:8080") // listen and serve on 0.0.0.0:8080

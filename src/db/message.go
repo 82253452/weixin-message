@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"log"
 )
 
@@ -26,6 +27,18 @@ type MessageDto struct {
 	Num      int    `db:"num"`
 	Nickname string `db:"nickname"`
 	Ctime    string `db:"ctime"`
+}
+
+type MessageGroupDto struct {
+	WordNumm int    `db:"wordNumm"`
+	TotalNum int    `db:"totalNum"`
+	ImgNum   int    `db:"imgNum"`
+	TextNum  int    `db:"textNum"`
+	VideoNum int    `db:"videoNum"`
+	Gid      string `db:"gid"`
+	Gname    string `db:"gname"`
+	LinkNum  string `db:"linkNum"`
+	Nickname string `db:"nickname"`
 }
 
 func (row *Message) Save() {
@@ -57,6 +70,54 @@ func SelectAllNames() []MessageDto {
 										from message
 										group by nickname
 										order by count(nickname) desc limit 10`)
+	return messages
+}
+
+func SelectAllGroups(names []string) []MessageGroupDto {
+	messages := []MessageGroupDto{}
+	querys := `select count(*)                              as wordNumm,
+       gid,
+       gname,
+       s.nickname,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.mid = s.mid)                 as totalNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content like '%<img%'
+          and a.mid = s.mid)                 as imgNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content like '%<video%'
+          and a.mid = s.mid)                 as videoNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.mid = s.mid
+          and a.content not like '%<img%'
+          and a.content not like '%<video%'
+          and a.content not like '%http%') as textNum,
+(select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.mid = s.mid
+          and a.content like '%http%') as linkNum
+from message s
+where nickname in (?)
+  and content like '%<img%'
+and TO_DAYS(ctime) = TO_DAYS(NOW())
+group by gid, gname, mid,nickname`
+	query, args, err := sqlx.In(querys, names)
+	if err != nil {
+		fmt.Println(err)
+	}
+	error := DB.Select(&messages, query, args...)
+	if error != nil {
+		fmt.Println(error)
+	}
 	return messages
 }
 
