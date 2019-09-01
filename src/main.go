@@ -40,6 +40,7 @@ func main() {
 		})
 	})
 	r.GET("/wexin/getAllGroups", func(c *gin.Context) {
+
 		name := c.Query("name")
 		names := strings.Split(name, ",")
 		groups := db.SelectAllGroups(names)
