@@ -112,38 +112,47 @@ func SelectAllGroups(names []string) []MessageGroupDto {
 	//group by gid, gname, mid,nickname`
 	querys := `
 		select count(*)                            as wordNumm,
-			   gid,
-			   gname,
-			   (select count(*)
-				from message a
-				where a.gid = s.gid
-			   )                                   as totalNum,
-			   (select count(*)
-				from message a
-				where a.gid = s.gid
-				  and a.content like '%<img%'
-			   )                                   as imgNum,
-			   (select count(*)
-				from message a
-				where a.gid = s.gid
-				  and a.content like '%<video%'
-			   )                                   as videoNum,
-			   (select count(*)
-				from message a
-				where a.gid = s.gid
-				  and a.content not like '%<img%'
-				  and a.content not like '%<video%'
-				  and a.content not like '%http%') as textNum,
-			   (select count(*)
-				from message a
-				where a.gid = s.gid
-				  and a.content like '%http%')     as linkNum
-		from message s
-		where nickname in (?)
-		  and TO_DAYS(ctime) = TO_DAYS(NOW())
-		group by gid, gname
+       gid,
+       gname,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+          and nickname in (?)
+       )                                   as totalNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content like '%<img%'
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+            and nickname in (?)
+       )                                   as imgNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content like '%<video%'
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+            and nickname in (?)
+       )                                   as videoNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content not like '%<img%'
+          and a.content not like '%<video%'
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+          and a.content not like '%http%') as textNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+           and nickname in (?)
+          and a.content like '%http%')     as linkNum
+from message s
+where nickname in (?)
+  and TO_DAYS(ctime) = TO_DAYS(NOW())
+group by gid, gname
 `
-	query, args, err := sqlx.In(querys, names)
+	query, args, err := sqlx.In(querys, names, names, names, names, names)
 	if err != nil {
 		fmt.Println(err)
 	}
