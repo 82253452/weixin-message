@@ -140,7 +140,6 @@ func SelectAllGroups(names []string) []MessageGroupDto {
 				  and a.content like '%http%')     as linkNum
 		from message s
 		where nickname in (?)
-		  and content like '%<img%'
 		  and TO_DAYS(ctime) = TO_DAYS(NOW())
 		group by gid, gname
 `

@@ -4,9 +4,27 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"weixin/src/db"
+	"weixin/src/redis"
 )
+
+type Person struct {
+	Name string `form:"name"`
+}
+
+func ToAscll(str string) string {
+	textQuoted := strconv.QuoteToASCII(str)
+	textUnquoted := textQuoted[1 : len(textQuoted)-1]
+	fmt.Println(textUnquoted)
+	re3, _ := regexp.Compile(`\\u....`)
+	rep := re3.ReplaceAllStringFunc(textUnquoted, strings.ToUpper)
+	re4, _ := regexp.Compile(`\\u`)
+	rep = re4.ReplaceAllStringFunc(textUnquoted, strings.ToLower)
+	return rep
+}
 
 func main() {
 	r := gin.Default()
@@ -40,13 +58,29 @@ func main() {
 		})
 	})
 	r.GET("/wexin/getAllGroups", func(c *gin.Context) {
-
-		name := c.Query("name")
+		name := ToAscll(redis.GET("teacher"))
 		names := strings.Split(name, ",")
 		groups := db.SelectAllGroups(names)
 		c.JSON(200, gin.H{
 			"status": "0",
 			"result": groups,
+		})
+
+	})
+	r.GET("/wexin/getTeacher", func(c *gin.Context) {
+		teacher := redis.GET("teacher")
+		c.JSON(200, gin.H{
+			"status": "0",
+			"result": teacher,
+		})
+	})
+	r.POST("/wexin/setTeacher", func(c *gin.Context) {
+		var teacher Person
+		c.ShouldBind(&teacher)
+		redis.SET("teacher", teacher.Name)
+		c.JSON(200, gin.H{
+			"status": "0",
+			"result": "ok",
 		})
 	})
 	r.Run("0.0.0.0:8080") // listen and serve on 0.0.0.0:8080
