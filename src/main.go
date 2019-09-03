@@ -59,6 +59,7 @@ func main() {
 	})
 	r.GET("/wexin/getAllGroups", func(c *gin.Context) {
 		name := ToAscll(redis.GET("teacher"))
+		fmt.Println(name)
 		names := strings.Split(name, ",")
 		groups := db.SelectAllGroups(names)
 		c.JSON(200, gin.H{
