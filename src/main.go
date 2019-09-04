@@ -61,7 +61,7 @@ func main() {
 		name := ToAscll(redis.GET("teacher"))
 		fmt.Println(name)
 		names := strings.Split(name, ",")
-		groups := db.SelectAllGroups(names)
+		groups := db.SelectAllGroupsNew(names)
 		c.JSON(200, gin.H{
 			"status": "0",
 			"result": groups,

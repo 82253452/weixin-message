@@ -149,6 +149,7 @@ func SelectAllGroups(names []string) []MessageGroupDto {
           and a.content like '%http%')     as linkNum
 from message s
 where 1=1 
+  and 	nickname in (?)
   and TO_DAYS(ctime) = TO_DAYS(NOW())
 group by gid, gname
 `
@@ -158,6 +159,53 @@ group by gid, gname
 		fmt.Println(err)
 	}
 	error := DB.Select(&messages, query, args...)
+	if error != nil {
+		fmt.Println(error)
+	}
+	return messages
+}
+
+func SelectAllGroupsNew(names []string) []MessageGroupDto {
+	querys := `
+		select count(*)                            as wordNumm,
+       gid,
+       gname,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+       )                                   as totalNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content like '%<img%'
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+       )                                   as imgNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content like '%<video%'
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+       )                                   as videoNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and a.content not like '%<img%'
+          and a.content not like '%<video%'
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+          and a.content not like '%http%') as textNum,
+       (select count(*)
+        from message a
+        where a.gid = s.gid
+          and TO_DAYS(ctime) = TO_DAYS(NOW())
+          and a.content like '%http%')     as linkNum
+from message s
+where 1=1 
+  and TO_DAYS(ctime) = TO_DAYS(NOW())
+group by gid, gname
+`
+	messages := []MessageGroupDto{}
+	error := DB.Select(&messages, querys)
 	if error != nil {
 		fmt.Println(error)
 	}
