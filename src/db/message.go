@@ -148,10 +148,11 @@ func SelectAllGroups(names []string) []MessageGroupDto {
            and nickname in (?)
           and a.content like '%http%')     as linkNum
 from message s
-where nickname in (?)
+where 1=1 
   and TO_DAYS(ctime) = TO_DAYS(NOW())
 group by gid, gname
 `
+	//nickname in (?)
 	query, args, err := sqlx.In(querys, names, names, names, names, names)
 	if err != nil {
 		fmt.Println(err)
