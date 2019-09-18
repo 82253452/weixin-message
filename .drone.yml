@@ -4,10 +4,8 @@ workspace:
   path: github.com/82253452/weixin-message
 name: drone
 steps:
-  - name: docker
-    image: plugins/docker
-    custom_dns: [ 114.114.114.114 ]
   - name: test
+    value: 114.114.114.114
     image: golang
     custom_dns: [ 114.114.114.114 ]
     commands:
