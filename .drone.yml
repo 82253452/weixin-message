@@ -4,6 +4,7 @@ workspace:
   path: src/weixin
 name: drone
 steps:
+
   - name: test
     value: 114.114.114.114
     image: golang
