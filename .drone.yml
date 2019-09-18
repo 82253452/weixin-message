@@ -1,0 +1,9 @@
+kind: pipeline
+name: drone
+steps:
+  - name: test
+    image: golang
+    commands:
+      - go build
+
+
