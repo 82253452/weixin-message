@@ -10,6 +10,7 @@ steps:
     image: golang
     custom_dns: [ 114.114.114.114 ]
     commands:
+      - cd src
       - pwd
       - ls
       - go get
