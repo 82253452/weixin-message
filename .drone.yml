@@ -3,6 +3,7 @@ workspace:
   base: /go
   path: github.com/82253452/weixin-message
 name: drone
+
 steps:
   - name: test
     image: golang
