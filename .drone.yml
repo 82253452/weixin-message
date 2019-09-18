@@ -9,6 +9,7 @@ steps:
     image: golang
     commands:
       - pwd
+      - ls
       - go get
       - go build
 
