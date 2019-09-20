@@ -1,10 +1,8 @@
 package redis
 
 import (
-	"awesomeProject/src/tool"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"strconv"
 	"time"
 )
 
@@ -33,38 +31,4 @@ func GET(str string) string {
 		return ""
 	}
 	return s
-}
-
-func LRANGE() []string {
-	conn := REDISPOOL.Get()
-	defer conn.Close()
-	size, _ := strconv.Atoi(tool.Config.Redis.Size)
-	list, err := redis.Strings(conn.Do("LRANGE", tool.Config.Redis.ParseKey, 0, size-1))
-	if err != nil {
-		fmt.Println("redis get error:", err)
-		return nil
-	}
-	return list
-}
-
-func LTRIM() {
-	conn := REDISPOOL.Get()
-	size, _ := strconv.Atoi(tool.Config.Redis.Size)
-	r, err := conn.Do("LTRIM", tool.Config.Redis.ParseKey, size-1, -1)
-	if err != nil {
-		fmt.Println("redis get error:", err)
-	}
-	fmt.Println("LTRIM:", r)
-	conn.Close()
-}
-
-func LREM() []string {
-	conn := REDISPOOL.Get()
-	defer conn.Close()
-	list, err := redis.Strings(conn.Do("LREM", tool.Config.Redis.ParseKey, 0, tool.Config.Redis.Size))
-	if err != nil {
-		fmt.Println("redis get error:", err)
-		return nil
-	}
-	return list
 }
