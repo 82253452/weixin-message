@@ -4,7 +4,7 @@ workspace:
   path: src/weixin
 name: drone
 steps:
-  - name: test
+  - name: install
     value: 114.114.114.114
     image: golang
     custom_dns: [ 114.114.114.114 ]
@@ -20,5 +20,11 @@ steps:
       - ls
       - go get
       - go build
+
+  - name: build
+    image: plugins/docker
+    repo: test/test
+    dockerfile: ./Dockerfile
+    tags: 1
 
 
