@@ -13,7 +13,7 @@ steps:
       - mkdir -p golang.org/x
       - cd golang.org/x
       - git clone https://github.com/golang/sys.git
-      - cd weixin
+      - cd /go/src/weixin
       - bash
       - cd src
       - pwd
