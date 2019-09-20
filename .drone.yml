@@ -9,6 +9,10 @@ steps:
     image: golang
     custom_dns: [ 114.114.114.114 ]
     commands:
+      - cd ../
+      - mkdir -p golang.org/x
+      - cd golang.org/x
+      - git clone https://github.com/golang/sys.git
       - bash
       - cd src
       - pwd
