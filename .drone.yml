@@ -17,7 +17,6 @@ steps:
       - bash
       - cd src
       - pwd
-      - ls
       - go get
       - go build
 
