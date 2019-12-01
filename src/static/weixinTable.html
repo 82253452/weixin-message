@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>黄冈小助手（Powered By LX）</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+<div id="app">
+    <table border="1" cellpadding="10">
+        <tr>
+<!--            <th>群组id</th>-->
+            <th>群组名称</th>
+            <!--        <th>老师</th>-->
+            <th>总数</th>
+            <th>图片</th>
+            <th>视频</th>
+            <th>链接</th>
+            <th>其他</th>
+            <!--            <th>图片+视频</th>-->
+        </tr>
+        <tr v-for="item in list">
+<!--            <td>{{item.Gid}}</td>-->
+            <td>{{unescape(item.Gname.replace(/\\u/gi, '%u'))}}</td>
+            <!--                <td>{{unescape(item.Nickname.replace(/\\u/gi, '%u'))}}</td>-->
+            <td>{{item.ImgNum+item.VideoNum}}</td>
+            <td>{{item.ImgNum}}</td>
+            <td>{{item.VideoNum}}</td>
+            <td>{{item.LinkNum}}</td>
+            <td>{{item.TextNum}}</td>
+            <!--            <td>{{item.ImgNum+item.VideoNum}}</td>-->
+        </tr>
+    </table>
+</div>
+</div>
+
+<script>
+    var url = 'https://weixin.zhihuizhan.net/wexin/getAllGroups'
+    var app = new Vue({
+        el: '#app',
+        data: {
+            list: [],
+            sorted: ['386876',
+                '386864',
+                '386866',
+                '386867',
+                '386873',
+                '386870',
+                '386869',
+                '386881',
+                '386878',
+                '386852',
+                '386858',
+                '387214',
+                '386879',
+                '386868',
+                '386874',
+                '386872',
+                '386861',
+                '386871',
+                '386860',
+                '386880',
+                '387859',
+                '387846',
+                '387854',
+                '387860',
+                '387848'
+            ],
+            message: 'Hello Vue!'
+        },
+        mounted() {
+            this.getData()
+        },
+        methods: {
+            getData() {
+                fetch(url).then(response => response.json()).then(data => {
+                    const array = data.result
+                    array.sort((a, b) => this.sorted.indexOf(a.Gid)-this.sorted.indexOf(b.Gid))
+                    console.log(array)
+                    this.list = array
+                })
+            }
+        }
+    })
+
+    function ch2Unicdoe(str) {
+        if (!str) {
+            return;
+        }
+        var unicode = '';
+        for (var i = 0; i < str.length; i++) {
+            var temp = str.charAt(i);
+            if (isChinese(temp)) {
+                unicode += '\\u' + temp.charCodeAt(0).toString(16).toLocaleUpperCase();
+            } else {
+                unicode += temp;
+            }
+        }
+        return unicode;
+    }
+
+    // 判断字符是否为汉字，
+    function isChinese(s) {
+        return /[\u4e00-\u9fa5]/.test(s);
+    }
+</script>
+</body>
+</html>

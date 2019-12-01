@@ -29,6 +29,7 @@ func ToAscll(str string) string {
 func main() {
 	r := gin.Default()
 	r.Use(Cors())
+	r.Static("/", "./static")
 	r.POST("/wexin/call", func(c *gin.Context) {
 		var message db.Message
 		c.ShouldBind(&message)
